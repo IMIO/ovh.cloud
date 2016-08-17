@@ -1,0 +1,7 @@
+pymongo
+argh
+termcolor==1.1.0
+futures==3.0.3
+argparse
+colorlog
+ovh
