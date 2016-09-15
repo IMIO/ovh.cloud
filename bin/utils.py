@@ -3,6 +3,7 @@
 import colorlog
 import fcntl
 import logging
+import os
 import sys
 
 
@@ -62,3 +63,10 @@ def singleton():
     if file_is_locked('/code/lock'):
         log.warn('another instance is running exiting now')
         sys.exit(1)
+
+
+def get_environ(variable):
+    value = os.environ.get(variable)
+    if value is None:
+        raise ValueError('Missing environment variable {}'.format(variable))
+    return value

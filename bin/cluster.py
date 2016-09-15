@@ -5,18 +5,11 @@ from libcloud.compute.types import Provider
 from tabulate import tabulate
 import threading
 import argh
-import os
 import ovh
 import yaml
 from common import get_projects
-from utils import memoize
-
-
-def get_environ(variable):
-    value = os.environ.get(variable)
-    if value is None:
-        raise ValueError('Missing environment variable {}'.format(variable))
-    return value
+from utils import memoize, get_environ
+import patch  # NOQA
 
 
 def openstack_client():
