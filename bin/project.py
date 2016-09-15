@@ -11,7 +11,8 @@ from argh.decorators import arg
 def create(**kwargs):
     client = ovh.Client()
     project_name = kwargs.get('project')
-    log.info(client.post('/cloud/createProject', description=project_name))
+    if not get_projects(project_name):
+        log.info(client.post('/cloud/createProject', description=project_name))
 
 
 def list(**kwargs):
@@ -21,8 +22,18 @@ def list(**kwargs):
         log.info(project_details)
 
 
+@arg('--project', help='project name')
+def remove(**kwargs):
+    client = ovh.Client()
+    project_name = kwargs.get('project')
+    for project in get_projects(project_name):
+        project = '5c5ac79bb3d447ca985be85b4c8c6e2d'
+        client.post('/cloud/project/{}/terminate'.format(project))
+        log.info('Removed project {}'.format(project_name))
+
+
 if __name__ == "__main__":
     setup_logging()
     parser = argh.ArghParser()
-    parser.add_commands([create, list])
+    parser.add_commands([create, list, remove])
     parser.dispatch()
