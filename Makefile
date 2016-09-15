@@ -15,3 +15,20 @@ create-project:
 
 list-projects:
 	@docker run -ti --rm -v $(PWD)/ovh.conf:/code/ovh.conf -v $(PWD)/bin:/code/bin jfroche/ovh-py python /code/bin/project.py list
+
+check-cluster:
+ifndef CLUSTER
+	$(error CLUSTER is undefined)
+endif
+
+debug:
+	docker run --rm --volume $(SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -e OS_AUTH_URL -e OS_PASSWORD -e OS_REGION_NAME -e OS_TENANT_NAME -e OS_USERNAME -v $(PWD):/code -ti jfroche/ovh-py bash
+
+create-cluster: check-cluster
+	docker run --rm --volume $(SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -e OS_AUTH_URL -e OS_PASSWORD -e OS_REGION_NAME -e OS_TENANT_NAME -e OS_USERNAME -v $(PWD):/code jfroche/ovh-py bin/cluster.py create $(CLUSTER)
+
+list-cluster: check-cluster
+	docker run --rm --volume $(SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -e OS_AUTH_URL -e OS_PASSWORD -e OS_REGION_NAME -e OS_TENANT_NAME -e OS_USERNAME -v $(PWD):/code jfroche/ovh-py bin/cluster.py list $(CLUSTER)
+
+remove-cluster: check-cluster
+	docker run --rm --volume $(SSH_AUTH_SOCK):/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -e OS_AUTH_URL -e OS_PASSWORD -e OS_REGION_NAME -e OS_TENANT_NAME -e OS_USERNAME -v $(PWD):/code jfroche/ovh-py bin/cluster.py remove $(CLUSTER)

@@ -1,9 +1,16 @@
-FROM phusion/baseimage:0.9.19
-
-# install system packages
-RUN apt-get update && apt-get install -y python-pip
-ADD requirements.txt /tmp/requirements.txt
-RUN pip install -r /tmp/requirements.txt
-RUN mkdir -p /code
-
+FROM gliderlabs/alpine:3.4
+RUN apk add --update \
+    python \
+    python-dev \
+    musl-dev \
+    libffi-dev \
+    bash \
+    openssl \
+    openssl-dev \
+    ca-certificates \
+    linux-headers \
+    gcc \
+    py-pip && mkdir -p /code
+ADD requirements.txt /code
+RUN pip install -r /code/requirements.txt
 WORKDIR /code
