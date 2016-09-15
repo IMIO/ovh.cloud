@@ -1,20 +1,28 @@
 build:
 	docker build -t jfroche/ovh-py .
 
-list-instances:
-	@docker run -ti --rm -v $(PWD)/ovh.conf:/code/ovh.conf -v $(PWD)/bin:/code/bin jfroche/ovh-py python /code/bin/instance.py list --project loadtesting
+check-project:
+ifndef PROJECT
+	$(error PROJECT variable is undefined)
+endif
 
-list-ssh-keys:
-	@docker run -ti --rm -v $(PWD)/ovh.conf:/code/ovh.conf -v $(PWD)/bin:/code/bin jfroche/ovh-py python /code/bin/ssh-keys.py list --project loadtesting
+list-instances: check-project
+	@docker run -ti --rm -v $(PWD)/ovh.conf:/code/ovh.conf -v $(PWD)/bin:/code/bin jfroche/ovh-py python /code/bin/instance.py list --project $(PROJECT)
 
-remove-instances:
-	@docker run -ti --rm -v $(PWD)/ovh.conf:/code/ovh.conf -v $(PWD)/bin:/code/bin jfroche/ovh-py python /code/bin/instance.py remove-all --project loadtesting
+list-ssh-keys: check-project
+	@docker run -ti --rm -v $(PWD)/ovh.conf:/code/ovh.conf -v $(PWD)/bin:/code/bin jfroche/ovh-py python /code/bin/ssh-keys.py list --project $(PROJECT)
 
-create-project:
+remove-instances: check-project
+	@docker run -ti --rm -v $(PWD)/ovh.conf:/code/ovh.conf -v $(PWD)/bin:/code/bin jfroche/ovh-py python /code/bin/instance.py remove-all --project $(PROJECT)
+
+create-project: check-project
 	@docker run -ti --rm -v $(PWD)/ovh.conf:/code/ovh.conf -v $(PWD)/bin:/code/bin jfroche/ovh-py python /code/bin/project.py create --project $(PROJECT)
 
 list-projects:
 	@docker run -ti --rm -v $(PWD)/ovh.conf:/code/ovh.conf -v $(PWD)/bin:/code/bin jfroche/ovh-py python /code/bin/project.py list
+
+remove-project: check-project
+	@docker run -ti --rm -v $(PWD)/ovh.conf:/code/ovh.conf -v $(PWD)/bin:/code/bin jfroche/ovh-py python /code/bin/project.py remove --project $(PROJECT)
 
 check-cluster:
 ifndef CLUSTER
