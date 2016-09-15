@@ -40,15 +40,6 @@ def config(project_file):
         return cfg
 
 
-def get_project(client, project_name=None):
-    for project in client.get('/cloud/project'):
-        if project_name:
-            project_details = client.get('/cloud/project/{}'.format(project))
-            if project_name != project_details['description']:
-                continue
-        return project
-
-
 def create_network(client, project, name, cidr, first, last, location, vlanId):
     networks = client.get('/cloud/project/{}/network/private'.format(project))
     if name in [net['name'] for net in networks]:
@@ -109,7 +100,7 @@ def create_node(name, size, image, networks, ssh_key, deploy_steps=[]):
 
 def create_networks(ovh_client, cfg):
     for network_name, net_cfg in cfg['networks'].items():
-        create_network(ovh_client, get_project(ovh_client, cfg['project']), network_name,
+        create_network(ovh_client, get_projects(cfg['project']).next(), network_name,
                        cidr=net_cfg['cidr'], first=net_cfg['first'],
                        last=net_cfg['last'], location=net_cfg['location'],
                        vlanId=net_cfg['vlan-id'])
@@ -154,7 +145,7 @@ def list(project_file):
     if keys:
         print '\nkeys:'
         print tabulate(keys, headers=['name', 'fingerprint'])
-    project = get_project(ovh_cli, cfg['project'])
+    project = get_projects(cfg['project']).next()
     networks = [(network['id'], network['name'], network['type']) for network in ovh_cli.get('/cloud/project/{}/network/private'.format(project))
                 if network['name'] in cfg['networks'].keys()]
     if networks:
