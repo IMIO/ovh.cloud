@@ -69,18 +69,21 @@ def create_key(cli, name, value):
         cli.import_key_pair_from_string(name, value)
 
 
+@memoize
 def get_image(cli, name):
     for image in cli.list_images():
         if image.name == name:
             return image
 
 
+@memoize
 def get_sizes(cli, name):
     for size in cli.list_sizes():
         if size.name == name:
             return size
 
 
+@memoize
 def get_network(cli, name):
     for net in cli.ex_list_networks():
         if net.name == name:
@@ -116,15 +119,16 @@ def create_nodes(cli, cfg):
     for node_name, node_details in cfg['nodes'].items():
         if node_name not in [node.name for node in cli.list_nodes()]:
             networks = [get_network(cli, net) for net in node_details['networks']]
-            t = threading.Thread(target=create_node, args = (
+            t = threading.Thread(target=create_node, args=(
                 (node_name, get_sizes(cli, node_details['size']),
-                        get_image(cli, node_details['image']),
-                        networks, node_details['ssh-key'])))
+                 get_image(cli, node_details['image']),
+                 networks, node_details['ssh-key'])))
             t.daemon = True
             t.start()
             threads.append(t)
     for t in threads:
         t.join()
+
 
 def get_first(iterable, default=None):
     if iterable:
