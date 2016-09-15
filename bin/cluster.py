@@ -8,14 +8,23 @@ import argh
 import os
 import ovh
 import yaml
+from common import get_projects
+from utils import memoize
+
+
+def get_environ(variable):
+    value = os.environ.get(variable)
+    if value is None:
+        raise ValueError('Missing environment variable {}'.format(variable))
+    return value
 
 
 def openstack_client():
-    USER = os.environ.get('OS_USERNAME')
-    PASSWORD = os.environ.get('OS_PASSWORD')
-    TENANT_NAME = os.environ.get('OS_TENANT_NAME')
-    AUTH_URL = os.environ.get('OS_AUTH_URL')
-    REGION = os.environ.get('OS_REGION_NAME')
+    USER = get_environ('OS_USERNAME')
+    PASSWORD = get_environ('OS_PASSWORD')
+    TENANT_NAME = get_environ('OS_TENANT_NAME')
+    AUTH_URL = get_environ('OS_AUTH_URL')
+    REGION = get_environ('OS_REGION_NAME')
     OpenStack = providers.get_driver(Provider.OPENSTACK)
     driver = OpenStack(USER, PASSWORD,
                        ex_force_auth_url='{}/tokens'.format(AUTH_URL),
