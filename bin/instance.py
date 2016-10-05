@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import json
 import ovh
 import argh
 import pprint
@@ -9,13 +10,20 @@ from argh.decorators import arg
 
 
 @arg('--project', help='project name')
+@arg('--format', help='project name', default='stdout')
 def list(**kwargs):
     client = ovh.Client()
     project_name = kwargs.get('project')
+    output_format = kwargs.get('format')
+    instances = []
     for project in get_projects(project_name):
         for instance in client.get('/cloud/project/{}/instance'.format(project)):
             instance_details = client.get('/cloud/project/{}/instance/{}'.format(project, instance['id']))
-            log.info(pprint.pformat(instance_details))
+            if output_format == 'json':
+                instances.append(instance_details)
+            else:
+                log.info(pprint.pformat(instance_details))
+    print json.dumps(instances)
 
 
 @arg('--project', help='project name')
