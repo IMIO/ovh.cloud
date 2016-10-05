@@ -85,7 +85,7 @@ def create_node(name, size, image, networks, ssh_key, deploy_steps=[]):
     print 'creating {}'.format(name)
     cli = openstack_client()
     if networks > 1:
-        deploy_steps.append(deployment.ScriptDeployment('sudo dhclient ens4'))
+        deploy_steps.append(deployment.ScriptDeployment('sudo dhclient ens4 &'))
     cli.deploy_node(name=name, image=image, size=size, ex_keyname=ssh_key,
                     ssh_username='ubuntu',
                     networks=networks, deploy=deployment.MultiStepDeployment(deploy_steps))
