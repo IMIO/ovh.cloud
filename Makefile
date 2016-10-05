@@ -6,8 +6,11 @@ ifndef PROJECT
 	$(error PROJECT variable is undefined)
 endif
 
+ifdef FORMAT
+CLI_FORMAT=--format $(FORMAT)
+endif
 list-instances: check-project
-	@docker run -ti --rm -v $(PWD)/ovh.conf:/code/ovh.conf -v $(PWD)/bin:/code/bin jfroche/ovh-py python /code/bin/instance.py list --project $(PROJECT)
+	$(DOCKER) run --rm -v $(shell pwd)/ovh.conf:/code/ovh.conf -v $(shell pwd)/bin:/code/bin jfroche/ovh-py python /code/bin/instance.py list --project $(PROJECT) $(CLI_FORMAT)
 
 list-ssh-keys: check-project
 	@docker run -ti --rm -v $(PWD)/ovh.conf:/code/ovh.conf -v $(PWD)/bin:/code/bin jfroche/ovh-py python /code/bin/ssh-keys.py list --project $(PROJECT)

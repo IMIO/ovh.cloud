@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import json
 import ovh
 import argh
 from common import get_projects
@@ -19,7 +20,7 @@ def list(**kwargs):
     client = ovh.Client()
     for project in get_projects():
         project_details = client.get('/cloud/project/{}'.format(project))
-        log.info(project_details)
+        log.info(json.dumps(project_details))
 
 
 @arg('--project', help='project name')
