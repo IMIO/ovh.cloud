@@ -35,15 +35,12 @@ def config(project_file):
 
 def create_network(client, project, name, cidr, first, last, location, vlanId):
     networks = client.get('/cloud/project/{}/network/private'.format(project))
-    if name in [net['name'] for net in networks]:
-        return
-
-    if not networks:
+    if name not in [net['name'] for net in networks]:
         print client.post('/cloud/project/{}/network/private'.format(project),
                           name=name,
                           vlanID=vlanId)
         networks = client.get('/cloud/project/{}/network/private'.format(project))
-    networkId = networks[0]['id']
+    networkId = [net['id'] for net in networks if net['name'] == name][0]
     print networks
 
     subnets = client.get('/cloud/project/{}/network/private/{}/subnet'.format(project, networkId))
